@@ -1,0 +1,160 @@
+/******************************************************************
+
+Date - 10/11/2013
+Author - B.Waidyawansa
+
+SHMSPrimaryGeneratorAction class implementation
+
+ 
+11-05-2013 Buddhini - Hardcode location of the particle gun w.r.t bender body coordinate system. 
+
+******************************************************************/
+
+
+#include "SHMSPrimaryGeneratorAction.hh"
+
+#include "globals.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4UnitsTable.hh"
+#include "Randomize.hh"
+
+
+// booliean keys to turn on/off particle gun types
+#define TEST 0         // to test the magnetic field with no target
+#define WITH_TGT 1          
+#define DEBUG 0          
+
+
+
+SHMSPrimaryGeneratorAction::SHMSPrimaryGeneratorAction()
+{
+  // Particle gun and particle table 
+  //
+
+  fParticleGun = new G4ParticleGun(1);
+  fParticleTable = G4ParticleTable::GetParticleTable();
+
+  // Default particle
+  //
+  G4ParticleDefinition* particle = fParticleTable->FindParticle("e-");
+  fParticleGun->SetParticleDefinition(particle);
+  
+  // Particle energy distribution 11 GeV.
+  fParticleGun->SetParticleEnergy(11000*MeV);
+
+
+  /*
+    11-05-2013 Buddhini - Hardcode location of the particle gun w.r.t bender body coordinate system. 
+    The gun is 30 cm upstream from the center of the 20 cm long target.
+    From geometry (in cm);
+    
+    X = target_X+30*sin(8.5)
+    Y = 0
+    Z = target_Z+30*cos(8.5)  
+  From GDML file, bender_geom.gdml, target_X = 176 sin 3 , target_Z = -176 cos 3
+
+  */
+  gun_x_pos = 13.65*cm;
+  gun_y_pos = 0;
+  gun_z_pos = 205.43*cm;
+
+}
+
+SHMSPrimaryGeneratorAction::~SHMSPrimaryGeneratorAction()
+{
+  delete fParticleGun;
+}
+
+void SHMSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
+{
+  //this function is called at the begining of event
+  //Start position of primaries at the origin of the world coordinates
+ 
+  // To test the magnetic field
+  G4cout<<"\n### Generate Primaries .. "<<G4endl;
+
+  if(TEST){
+
+    // particles originate at the target.
+    fParticleGun->SetParticlePosition(G4ThreeVector(gun_x_pos,gun_y_pos,-gun_z_pos));
+
+    // test by shooting 3 particles with with 1.5 deg spacing
+    fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0,0,1));
+    fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    G4ThreeVector momDir1;
+    momDir1.setRThetaPhi(1.,-9.5*deg,0*deg);
+    fParticleGun->SetParticleMomentumDirection(momDir1);
+    fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    G4ThreeVector momDir2;
+    momDir2.setRThetaPhi(1.,-8.5*deg,0*deg);
+    fParticleGun->SetParticleMomentumDirection(momDir2);
+    fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    G4ThreeVector momDir3;
+    momDir3.setRThetaPhi(1.,-6.5*deg,0*deg);
+    fParticleGun->SetParticleMomentumDirection(momDir3);
+    fParticleGun->GeneratePrimaryVertex(anEvent);
+    
+    G4ThreeVector momDir4;
+    momDir4.setRThetaPhi(1.,-4.5*deg,0*deg);
+    fParticleGun->SetParticleMomentumDirection(momDir4);
+    fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    G4ThreeVector momDir5;
+    momDir5.setRThetaPhi(1.,-2.5*deg,0*deg);
+    fParticleGun->SetParticleMomentumDirection(momDir5);
+    fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    G4ThreeVector momDir6;
+    momDir6.setRThetaPhi(1.,2.5*deg,0*deg);
+    fParticleGun->SetParticleMomentumDirection(momDir6);
+    fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    G4ThreeVector momDir7;
+    momDir7.setRThetaPhi(1.,4.5*deg,0*deg);
+    fParticleGun->SetParticleMomentumDirection(momDir7);
+    fParticleGun->GeneratePrimaryVertex(anEvent);
+
+
+  }
+  
+  if(WITH_TGT){
+
+    // Initial beam position uniformly spread on a disk
+
+   G4double z0=-gun_z_pos;
+   G4double x0=0*cm;
+   G4double y0=0*cm;
+   
+   // beam size is 2x2 mm^2
+   G4double sizeMax = 0.2*cm; 
+
+
+   while (! (std::sqrt(x0*x0+y0*y0)<= sizeMax ))
+     {
+       x0 = CLHEP::RandFlat::shoot(-sizeMax,sizeMax);
+       y0 = CLHEP::RandFlat::shoot(-sizeMax,sizeMax);
+     }
+  
+   if(DEBUG){
+     G4cout<<"$$$$ x0 "<<x0<<G4endl;
+     G4cout<<"$$$$ y0 "<<y0<<G4endl;
+     G4cout<<"$$$$ x0+gun_x_pos "<<x0+gun_x_pos<<G4endl;
+     G4cout<<"$$$$ y0+gun_y_pos "<<y0+gun_y_pos<<G4endl;
+   }
+
+    fParticleGun->SetParticlePosition(G4ThreeVector(x0+gun_x_pos,y0+gun_y_pos,z0));
+
+   G4ThreeVector momDir;
+   momDir.setRThetaPhi(1.,-8.5*deg,0*deg);
+   fParticleGun->SetParticleMomentumDirection(momDir);
+   fParticleGun->GeneratePrimaryVertex(anEvent);
+
+
+  }
+  
+}
+

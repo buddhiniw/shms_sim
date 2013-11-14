@@ -1,0 +1,49 @@
+//******************************************************************
+/*
+Date - 10/23/2013
+Author - B.Waidyawansa
+
+SHMSSteppingAction class
+
+
+
+*/
+//******************************************************************
+
+#ifndef SHMSSteppingAction_h
+#define SHMSSteppingAction_h 1
+
+#include "G4UserSteppingAction.hh"
+#include "G4LogicalVolume.hh"
+
+#include <vector>
+
+class SHMSRunAction;
+class SHMSDetectorConstruction;
+class SHMSPrimaryGeneratorAction;
+class SHMSAnalysisManager;
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
+class SHMSSteppingAction : public G4UserSteppingAction
+{
+public:
+
+  SHMSSteppingAction(SHMSRunAction*, SHMSDetectorConstruction*
+		     ,SHMSPrimaryGeneratorAction*,SHMSAnalysisManager*);
+  ~SHMSSteppingAction();
+  
+  void UserSteppingAction(const G4Step*);
+  
+private:
+
+  SHMSRunAction*              fRun;
+  SHMSDetectorConstruction*   fDetector; 
+  SHMSPrimaryGeneratorAction* fPrimary;
+  SHMSAnalysisManager* 	      fHisto;
+  std::vector<G4LogicalVolume*>   fCoils;
+
+      
+};
+#endif
+

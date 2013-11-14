@@ -1,0 +1,131 @@
+//******************************************************************
+/*
+Date - 10/23/2013
+Author - B.Waidyawansa
+
+SHMSAnalysisManager class implementation
+based on geant4.9.6.p02/examples/advanced/purging_magnet/
+
+
+*/
+//******************************************************************
+
+#include <stdlib.h>
+#include <fstream>
+#include "SHMSAnalysisManager.hh"
+#include "SHMSDetectorHit.hh"
+
+
+SHMSAnalysisManager* SHMSAnalysisManager::fgInstance = 0;
+
+SHMSAnalysisManager* SHMSAnalysisManager::Instance()
+{
+// Static acces function via G4RunManager 
+  return fgInstance;
+}   
+
+
+SHMSAnalysisManager::SHMSAnalysisManager(SHMSDetectorConstruction*det)
+  :fDetector(det){
+
+  // set the root file name using the gdml file name
+  fileName  = "/data1/cdaq/buddhini/"+fDetector->GetGeomFile()+"_ntuple.root";
+  nDet = 0;
+  Clear();
+}
+
+SHMSAnalysisManager::~SHMSAnalysisManager() 
+{ 
+}
+
+void SHMSAnalysisManager::Clear()
+{
+  if (theTFile)
+    {
+      Ntuples.clear();
+    }
+}
+
+void SHMSAnalysisManager::OpenROOTFile()
+{
+   
+  G4cout << "\n----> Open rootfile .. " << G4endl;
+
+  theTFile = new TFile(fileName, "RECREATE");
+  detNames = fDetector->GetDetNames();
+  nDet = detNames.size();
+  Ntuples.resize(nDet);
+  for(G4int i=0;i<nDet;i++)
+    {
+      Ntuples.at(i)  = new TNtuple(detNames.at(i), 
+				   "detector hits", 
+				   "world_x_cm:world_y_cm:world_z_cm:local_x_cm:local_y_cm:local_z_cm:kinE0_MeV:kinE_MeV:eDep_MeV:flagParticle");	
+
+      //AutoSave after every 50 Mbyte written to disk
+      //   Ntuples.at(i) -> SetAutoSave(50000000);
+    }
+ G4cout << "\n----> Ntuples are opened in " << fileName << G4endl;
+}
+
+
+void SHMSAnalysisManager::SaveROOTFile()
+{
+  if (theTFile)
+    {
+      theTFile -> Write(); 
+      theTFile -> Close();
+    }
+  theTFile = 0;
+  
+}
+
+
+// This function fills a N-tuple with position and energy of 
+// electrons entering the measurement volume.
+//
+void SHMSAnalysisManager::FillNtuple(G4String ntuple_name, 
+				     G4ThreeVector world, G4ThreeVector local,
+				     G4double kineE0, G4double kineE, G4double eDep,
+				     G4double particle_flag)  
+{
+
+  TNtuple *ntuple = (TNtuple *)gDirectory->Get(ntuple_name);
+
+  if(!ntuple) exit(1);
+  ntuple->Fill(world.x()/cm,world.y()/cm,world.z()/cm,
+	       local.x()/cm,local.y()/cm,local.z()/cm,
+	       kineE0,kineE,eDep,particle_flag);
+}
+//   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();    
+
+//   analysisManager->FillNtupleDColumn(0,world.x()/cm);
+//   analysisManager->FillNtupleDColumn(1,world.y()/cm);
+//   analysisManager->FillNtupleDColumn(2,world.z()/cm);
+//   analysisManager->FillNtupleDColumn(3,local.x()/cm);
+//   analysisManager->FillNtupleDColumn(4,local.y()/cm);
+//   analysisManager->FillNtupleDColumn(5,local.z()/cm);
+//   analysisManager->FillNtupleDColumn(6,kinE0/MeV);
+//   analysisManager->FillNtupleDColumn(7,kinE/MeV);
+//   analysisManager->FillNtupleDColumn(8,eDep/MeV);
+//   analysisManager->FillNtupleDColumn(9,particle_flag);
+//   analysisManager->AddNtupleRow();  
+  
+//}
+
+// void SHMSAnalysisManager::FillNtuple(SHMSDetectorHit *aHit)  
+// {
+//   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();    
+
+//   analysisManager->FillNtupleDColumn(0,aHit->GetWorldPos().x()/cm);
+//   analysisManager->FillNtupleDColumn(1,aHit->GetWorldPos().y()/cm);
+//   analysisManager->FillNtupleDColumn(2,aHit->GetWorldPos().z()/cm);
+//   analysisManager->FillNtupleDColumn(3,aHit->GetLocalPos().x()/cm);
+//   analysisManager->FillNtupleDColumn(4,aHit->GetLocalPos().y()/cm);
+//   analysisManager->FillNtupleDColumn(5,aHit->GetLocalPos().z()/cm);
+//   analysisManager->FillNtupleDColumn(6,aHit->GetKineticEnergy0()/MeV);
+//   analysisManager->FillNtupleDColumn(7,aHit->GetKineticEnergy()/MeV);
+//   analysisManager->FillNtupleDColumn(8,aHit->GetTotalEnergy()/MeV);
+//   analysisManager->FillNtupleDColumn(9,aHit->GetParticleFlag());
+//   analysisManager->AddNtupleRow();    
+// }
+

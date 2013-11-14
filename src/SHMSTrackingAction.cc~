@@ -1,0 +1,50 @@
+//******************************************************************
+/*
+Date - 10/11/2013
+Author - B.Waidyawansa
+
+SHMSRunAction class implementation using examples/extended/electromagnetic/TestEM4
+
+
+
+*/
+//******************************************************************
+
+#include "SHMSRunAction.hh"
+#include "G4Run.hh"
+#include "SHMSTrackingAction.hh"
+#include "G4ParticleDefinition.hh"
+
+
+
+SHMSRunAction::RunAction(SHMSDetectorConstruction* det, SHMSAnalysisManager* his, SHMSTrackingAction* trackingAction)
+  :Detector(det),Histo(his),TrackingAct(trackingAction)
+{}
+
+
+void SHMSRunAction::BeginOfRunAction(const G4Run*)
+{  
+  // Histograms
+  Histo->book();
+}
+
+void PrintNParticles(std::map<const G4ParticleDefinition*, int>& container)
+{
+    std::map<const G4ParticleDefinition*, int>::iterator it;
+    for(it = container.begin() ;
+        it != container.end(); it ++)
+    {
+        G4cout << "N " << it->first->GetParticleName() << " : " << it->second << G4endl;
+    }
+}
+
+void SHMSRunAction::EndOfRunAction(const G4Run*)
+{
+  //save histograms      
+  Histo->save();
+
+  std::map<const G4ParticleDefinition*, int>&  particlesCreatedInWorld = TrackingAct->GetNParticlesCreatedInWorld();
+  G4cout << "Number and type of particles created outside region \"Target\" :" << G4endl;
+  PrintNParticles(particlesCreatedInWorld);
+
+}

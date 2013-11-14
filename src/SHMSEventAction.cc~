@@ -1,0 +1,180 @@
+//******************************************************************
+/*
+Date - 10/15/2013
+Author - B.Waidyawansa
+
+SHMSEventAction class implementation using examples/extended/electromagnetic/TestEM4
+
+
+
+*/
+//******************************************************************
+
+#include "SHMSEventAction.hh"
+#include "g4root.hh"
+
+#include "G4RunManager.hh"
+#include "G4Event.hh"
+#include "G4SDManager.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4GenericMessenger.hh"
+#include "G4UnitsTable.hh"
+#include "G4SystemOfUnits.hh"
+
+#include "SHMSSteppingAction.hh"
+#include "SHMSDetectorConstruction.hh"
+
+SHMSEventAction* SHMSEventAction::fgInstance = 0;
+
+SHMSEventAction* SHMSEventAction::Instance()
+{
+// Static acces function via G4RunManager 
+  return fgInstance;
+}   
+                              
+SHMSEventAction::SHMSEventAction()
+{
+
+  fEnergySum = 0.0;
+  fEnergySumElec = 0.0;
+  fEnergySumPosi = 0.0;
+  fEnergySumNeut = 0.0;
+  fEnergySumGamma = 0.0;
+}
+
+SHMSEventAction::~SHMSEventAction()
+{}
+
+void SHMSEventAction::BeginOfEventAction( const G4Event* event)
+{
+  
+  G4int eventID = event->GetEventID();
+  G4cout << "\n### Event Action - Begining of event " << eventID << G4endl;
+  SHMSDetectorConstruction* ana = SHMSDetectorConstruction::Instance();  
+  nDets = 1;
+//   // Figure out later why this call is returning null. Till then, hard code number of
+//   // sensitive detectors - Buddhini 11-06-13
+//   //  nDets = ana->GetNoSDDetectors();
+  G4cout<<" Number of sensitive detectors = "<<nDets<<G4endl;
+
+  G4SDManager * SDman = G4SDManager::GetSDMpointer();
+  if((int) hitsCollectionID.size()==0)   
+    {
+      G4cout<<"\nSetting hitsCollectionID"<<G4endl;
+     
+      for (int i=0; i<nDets; i++) {
+	G4String collName = "magnet";
+	collName+=G4UIcommand::ConvertToString(i+1);
+	collName+="/hitsColl";
+	G4cout << collName << G4endl;
+	hitsCollectionID.push_back (SDman->GetCollectionID(collName));
+      }
+      G4cout<<"\nFinished setting hitsCollectionID"<<G4endl;      
+    }
+
+}
+
+
+void SHMSEventAction::EndOfEventAction(const G4Event* event)
+{                          
+
+  // get analysis manager
+  analysisManager = SHMSAnalysisManager::Instance();
+
+  // Get hits collection for this event
+  G4HCofThisEvent * HCE = event->GetHCofThisEvent();
+  std::vector<SHMSDetectorHitsCollection*> THC;
+
+  
+  if(HCE) {
+    for (int i=0; i<nDets; i++) {
+      THC.push_back ((SHMSDetectorHitsCollection*)(HCE->GetHC(hitsCollectionID[i])));
+    }
+  }
+
+  // Set nDets by hand here. See BeginOfEventAction() for details.
+  nDets = 1;
+
+  for (int i=0; i<nDets; i++) {
+    if(THC[i]){
+      int n_hit = THC[i]->entries();
+      if (n_hit>0) {
+	//	SHMSDetectorHit* aHit = (*THC[i])[0];
+	// For now, we save all hits in the sensitive detectors without any selections
+	//	analysisManager->FillNtuple(aHit);
+      }
+    }
+}
+
+
+
+
+
+//   // Get energy of the primary event
+//   G4PrimaryVertex* primaryVertex = event->GetPrimaryVertex();
+//   G4PrimaryParticle* primaryParticle = primaryVertex->GetPrimary();
+//   G4double ke = primaryParticle->GetKineticEnergy();
+
+//   // fill ntuple
+//   //
+//   analysisManager->FillNtupleDColumn(0,ke);
+//   analysisManager->AddNtupleRow(); 
+  
+//   // accumulate statistics
+
+//   G4double energy = SHMSSteppingAction::Instance()->GetEnergy();
+//   G4double energyElec = SHMSSteppingAction::Instance()->GetEnergyElectrons();
+//   G4double energyPosi = SHMSSteppingAction::Instance()->GetEnergyPositrons();
+//   G4double energyGamma = SHMSSteppingAction::Instance()->GetEnergyGamma();
+//   G4double energyNeut = SHMSSteppingAction::Instance()->GetEnergyNeutrons();
+
+//   fEnergySum        += energy;
+//   fEnergySumElec    += energyElec;
+//   fEnergySumPosi    += energyPosi;
+//   fEnergySumGamma    += energyGamma;
+//   fEnergySumNeut   += energyNeut;
+
+
+}
+
+
+// G4THitsMap<G4double>* 
+// SHMSEventAction::GetHitsCollection(const G4String& hcName,
+// 				    const G4Event* event) const
+// {
+//   G4int hcID 
+//     = G4SDManager::GetSDMpointer()->GetCollectionID(hcName);
+//   G4THitsMap<G4double>* hitsCollection 
+//     = static_cast<G4THitsMap<G4double>*>(
+//         event->GetHCofThisEvent()->GetHC(hcID));
+  
+//   if ( ! hitsCollection ) {
+//     G4cerr << "Cannot access hitsCollection " << hcName << G4endl;
+//     exit(1);
+//   }         
+  
+//   return hitsCollection;
+// }    
+
+
+// G4double SHMSEventAction::GetSum(G4THitsMap<G4double>* hitsMap) const
+// {
+//   G4double sumValue = 0;
+//   std::map<G4int, G4double*>::iterator it;
+//   for ( it = hitsMap->GetMap()->begin(); it != hitsMap->GetMap()->end(); it++) {
+//     sumValue += *(it->second);
+//   }
+//   return sumValue;  
+// }  
+
+// void SHMSEventAction::PrintEventStatistics(G4int coilN,G4double coilEdep[]) const
+// {
+//   // Print event statistics
+//   //
+//   for(G4int k=0; k<coilN; k++){
+//     G4cout
+//       << "   Coil: total energy: " 
+//       << std::setw(7) << G4BestUnit(coilEdep[k], "Energy")
+//       << G4endl;
+//       }
+// }

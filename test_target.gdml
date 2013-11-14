@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/data1/cdaq/geant4.tmp/geant4.9.6-p2/geant4.9.6.p02/source/persistency/gdml/schema/gdml.xsd">
+
+<define>
+ 	<constant name="PI" value="1.*pi"/>
+	<variable name="target_to_hbbore_center" value="176"/>
+	<constant name="fBoreRot" value="1.5"/>
+	<constant name="fHBLHeThick" value="0.5"/>
+
+	<constant name="fWorldX" value="50"/>
+	<constant name="fWorldY" value="50"/>
+	<constant name="fWorldZ" value="450"/>
+	<constant name="fTargetD" value="6.28"/>	
+	<constant name="fTargetZ" value="20"/>	
+	<constant name="fTargetCenterX" value="sin(3*pi/180)*target_to_hbbore_center"/>
+	<constant name="fTargetCenterY" value="0"/>
+	<constant name="fTargetCenterZ" value="cos(3*pi/180)*target_to_hbbore_center"/>
+ 	<position name="Origin" unit="cm" x="0" y="0" z="0" />
+  	<position name="pTarget" unit="cm" x="fTargetCenterX" y="fTargetCenterY" z="-fTargetCenterZ" />
+	<rotation name="rTarget" unit="deg" x="0" y="8.5" z="0" />
+
+</define>
+
+<materials>
+	<element Z="7" formula="N" name="Nitrogen" >
+   	<atom value="14.007" />
+  	</element>
+
+  	<element Z="8" formula="O" name="Oxygen" >
+   	<atom value="15.999" />
+  	</element>
+
+   	<material formula=" " name="Air" >
+   	<D value="0.00129" />
+   	<fraction n="0.7" ref="Nitrogen" />
+   	<fraction n="0.3" ref="Oxygen" />
+	</material>
+
+	<material name="Copper" Z="29">
+   	<D unit="g/cm3" value="8.96"/> <atom unit="g" value="63.546"/>
+  	</material>
+
+	<material name="Al" Z="13.0">
+   	<D value="2.70"/> <atom value="26.98"/>
+  	</material>
+
+	<material name="Vacuum" Z="13.0">
+   	<D value="2.70"/> <atom value="26.98"/>
+  	</material>
+
+	<material name="SSteel" Z="1.0">
+   	<D value="2.70"/> <atom value="26.98"/>
+  	</material>
+
+	<material name="LHe" Z="2">
+   	<D value="0.147"/> <atom value="4"/>
+  	</material>
+
+	<material name="LH2" Z="1">
+   	<D unit="g/cm3" value="0.07085"/> <atom unit="g/mole" value="1.00794"/>
+  	</material>
+
+	<material name="LH2-10" Z="1">
+   	<D unit="g/cm3" value="0.7085"/> <atom unit="g/mole" value="1.00794"/>
+  	</material>
+</materials>
+
+<solids>
+	<box lunit="cm" name="boxWorld" x="fWorldX" y="fWorldY" z="fWorldZ"/>
+
+	<tube aunit="deg"  name="target" startphi="0" deltaphi="360" lunit="cm" rmin="0" rmax="fTargetD/2" z="fTargetZ"/>
+
+	
+</solids>
+
+<structure>
+	<volume name="TargetLogic">
+	<materialref ref="LH2-10"/>
+	<solidref ref="target"/>
+	<auxiliary auxtype="SensDet" auxvalue="Target"/>
+	</volume>
+
+	<volume name="TargetLogic2">
+	<materialref ref="LH2-10"/>
+	<solidref ref="target"/>
+	<auxiliary auxtype="SensDet" auxvalue="HB"/>
+	</volume>
+	
+	<volume name="World">
+	<materialref ref="Air"/> 
+	<solidref ref="boxWorld"/>
+		<physvol name="Target">
+		<volumeref ref="TargetLogic"/>
+		<positionref ref="pTarget"/>
+		<rotationref ref="rTarget"/>
+		</physvol>
+
+ 	</volume>	
+
+</structure>
+
+<setup name="Default" version="1.0">
+<world ref="World"/>
+</setup>
+
+</gdml>

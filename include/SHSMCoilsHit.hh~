@@ -1,0 +1,41 @@
+//******************************************************************
+/*
+Date - 10/15/2013
+Author - B.Waidyawansa
+
+SHMSCoilsSD - class for the sensitive volume of the coils
+
+
+
+*/
+//******************************************************************
+
+#ifndef SHMSCoilsSD_h
+#define SHMSCoilsSD_h 1
+
+#include "G4VSensitiveDetector.hh"
+#include "SHMSCoilsHit.hh"
+
+class G4Step;
+class G4HCofThisEvent;
+
+class SHMSCoilsSD : public G4VSensitiveDetector
+{
+public:
+  SHMSCoilsSD(G4String);
+  ~SHMSCoilsSD();
+  
+  void Initialize(G4HCofThisEvent*);
+  G4bool ProcessHits(G4Step*, G4TouchableHistory*);
+  void EndOfEvent(G4HCofThisEvent*);
+  
+private:
+  SHMSCoilsHitsCollection* coilsCollection;
+  
+};
+
+
+#endif
+
+
+

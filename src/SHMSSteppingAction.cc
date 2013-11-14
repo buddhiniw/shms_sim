@@ -1,0 +1,143 @@
+//******************************************************************
+/*
+Date - 10/23/2013
+Author - B.Waidyawansa
+
+SHMSSteppingAction class implementation
+based on geant4.9.6.p02/examples/advanced/purging_magnet/
+
+10-25-13 Added protection for negative energy resulting from very low energy ( 1E-6 eV ) scattering.
+
+
+*/
+//******************************************************************
+
+#include "SHMSSteppingAction.hh"
+#include "SHMSRunAction.hh"
+#include "SHMSDetectorConstruction.hh"
+#include "SHMSPrimaryGeneratorAction.hh"
+#include "SHMSAnalysisManager.hh"
+
+#include "G4SystemOfUnits.hh"
+#include "G4SteppingManager.hh"
+#include "G4VTouchable.hh"
+#include "G4VPhysicalVolume.hh"
+#include "G4VParticleChange.hh"
+#include "G4Track.hh"
+
+
+SHMSSteppingAction* SHMSSteppingAction::fgInstance = 0;
+
+SHMSSteppingAction* SHMSSteppingAction::Instance()
+{
+// Static acces function via G4RunManager 
+  return fgInstance;
+}   
+
+SHMSSteppingAction::SHMSSteppingAction(SHMSRunAction* run, SHMSDetectorConstruction* det,
+				       SHMSPrimaryGeneratorAction* prim, SHMSAnalysisManager* hist)
+  :fRun(run),fDetector(det),fPrimary(prim),fHisto(hist)
+{
+  fgInstance = this;
+}
+
+SHMSSteppingAction::~SHMSSteppingAction()
+{}
+
+void SHMSSteppingAction::UserSteppingAction(const G4Step* aStep)
+{ 
+
+ /** Get data that will go into ROOT tree **/
+
+  G4Track* fTrack = aStep->GetTrack();
+
+/* KILL particle if it hits a the shielding and the magnet york */
+  G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
+  G4VPhysicalVolume* thePrePV = preStepPoint->GetPhysicalVolume();
+
+  if(thePrePV->GetName()=="HBYork" || thePrePV->GetName()=="SheildWall")
+    {
+      fTrack->SetTrackStatus(fKillTrackAndSecondaries);
+      return;
+    } 
+
+//   // Identify and flag the particle
+//   //
+
+//   G4double flagParticle=0.;
+
+//   if (fTrack->GetDynamicParticle()->GetDefinition() ->GetParticleName() == "e-")       flagParticle = 1;    
+//   if (fTrack->GetDynamicParticle()->GetDefinition() ->GetParticleName() == "e+")       flagParticle = 2;
+//   if (fTrack->GetDynamicParticle()->GetDefinition() ->GetParticleName() == "gamma")    flagParticle = 3;
+//   if (fTrack->GetDynamicParticle()->GetDefinition() ->GetParticleName() == "neutron")  flagParticle = 4;
+
+//    /*
+    
+//   PreStepPoint and PostStepPoint.
+  
+  
+//   NOTE: In Geant4, "particles are NOT transported in the tracking category".
+  
+//   It means that tracking is not been done from one point to the other.
+//   Instead, G4 uses concept of 'step', which is related with physics process.
+//   It calculates most probable process and do it.  As a result, it results in
+//   two points; PreStepPoint and PostStepPoint.
+    
+//   PreStepPoint contains track information before a process has been occurred,
+//   while PostStepPoint has information after the process has been processed.
+  
+//   PreStepPoint
+  
+//   --> G4 calculates probabilities of the physics processes
+//   --> Take smallest process step length among the processes
+//   --> Calculate other processes during the step
+  
+//   --> 
+//   PostStepPoint
+  
+  
+//   So to get the information related with the current 'position', such as 
+//   current volume, we have to use PreStepPoint.  
+  
+//   But if we need information releted with the 'processes', we have to use
+//   PostStepPoint.
+  
+  
+//   Positional Information: PreStepPoint  : current volume, ...
+//   Procedural Information: PostStepPoint : process name, eLoss, step length, ...
+//   */
+
+  
+//   G4int nDet = (fDetector->GetDetNames()).size();
+
+//   // When entering names for the sensitive detectors, make sure they match the name of the
+//   // physical volume. Here we do the comparision before filling the ntuples.
+//        for(G4int i=0;i<nDet;i++){
+// 	 if(thePrePV->GetName()==(fDetector->GetDetNames()).at(i)){
+
+//       // the preStepPoint is at the boundary of the volume
+//       if (preStepPoint->GetStepStatus() == fGeomBoundary){
+	
+// 	G4ThreeVector worldPosition = preStepPoint->GetPosition();
+// 	G4ThreeVector localPosition = preStepPoint->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(worldPosition);
+// 	G4double eDep = aStep->GetTotalEnergyDeposit();
+	
+// 	// Creator process
+// 	const G4VProcess* creatorProcess = fTrack->GetCreatorProcess();
+// 	G4String process;
+// 	if (creatorProcess!=0) process = creatorProcess->GetProcessName();
+	
+// 	// Kinetic energy of the original electron which interacted inside the target
+// 	G4double kinE0 = fTrack->GetVertexKineticEnergy();
+	
+// 	// Kinetic energy of the electron when it hit the sensitive detector
+// 	G4double kinE = fTrack->GetKineticEnergy();
+	
+// 	// fill ntuple  
+// 	fHisto->FillNtuple(thePrePV->GetName(),worldPosition,localPosition
+// 			   ,kinE0,kinE,eDep,flagParticle);  
+//       }
+//     }
+//   }
+  
+}

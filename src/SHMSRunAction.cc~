@@ -1,0 +1,61 @@
+//******************************************************************
+/*
+Date - 10/11/2013
+Author - B.Waidyawansa
+
+SHMSRunAction class implementation using examples/extended/electromagnetic/TestEM4
+
+
+
+*/
+//******************************************************************
+
+#include "SHMSRunAction.hh"
+#include "G4Run.hh"
+#include "G4ParticleDefinition.hh"
+
+
+
+SHMSRunAction::SHMSRunAction(SHMSDetectorConstruction* det, SHMSAnalysisManager* ana,SHMSEventAction* eve)
+  :Detector(det),Output(ana),Event(eve)
+{}
+
+SHMSRunAction::~SHMSRunAction()
+{}
+
+
+void SHMSRunAction::BeginOfRunAction(const G4Run* aRun)
+{  
+  G4cout << "\n### Run Action - Run " << aRun->GetRunID() << " start.." << G4endl;
+
+  // Open ROOT file to store ROOT tree
+  Output->OpenROOTFile();
+}
+
+
+void SHMSRunAction::EndOfRunAction(const G4Run* aRun)
+{
+
+//   // Compute total energy deposited in the volume
+//   G4double energySum  = Event->GetEnergySum();
+//   G4double energyElecSum   = Event->GetEnergySumElectrons();
+//   G4double energyPosiSum   = Event->GetEnergySumPositrons();
+//   G4double energyNeutSum   = Event->GetEnergySumNeutrons();
+//   G4double energyGammaSum  = Event->GetEnergySumGamma();
+
+//   G4cout<<" ^^ Total energy deposited (MeV) = "<<energySum<<G4endl;
+//   G4cout<<" ^^ Total energy deposited by electrons (MeV) = "<<energyElecSum<<G4endl;
+//   G4cout<<" ^^ Total energy deposited by positrons (MeV) = "<<energyPosiSum<<G4endl;
+//   G4cout<<" ^^ Total energy deposited by neutrons (MeV) = "<<energyNeutSum<<G4endl;
+//   G4cout<<" ^^ Total energy deposited by gamma (MeV) = "<<energyGammaSum<<G4endl;
+
+// //   if(energySum!=0){
+// //     Output->FillNtupleDColumn(6,energySum);
+// //   }
+
+  //save ntuples
+  Output->SaveROOTFile();
+
+  G4cout << "### Run Action complete.." << G4endl;
+
+}

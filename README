@@ -1,0 +1,23 @@
+SHMS_simulation for fringe fields
+=================================================
+
+Make sure to source buddhini.csh at the login and $G4BIN/geant4.csh to set the GEANT4 enviorenment
+
+To run this simulation -
+
+ - mkdir shms_sim_build
+ - cd shms_sim_build
+ - cmake -DGeant4_DIR=/net/cdaq/cdaql3data/cdaq/geant4 9.6.2 ~/geant4work/examples/advanced/shms_simulation
+
+- Then compile
+make -j  3
+
+
+- Copy gdml files into the build directory.
+	- mag_field_test.gdml - no detectors. 
+ 	- bender_test.gdml - no target. Only the bender
+	- test_target.gdml - only the target. No detectors.
+	- bender_geom.gdml - full setup
+	- bender_geom_no_dump.gdml - no beam dump.
+
+

@@ -1,0 +1,37 @@
+//******************************************************************
+/*
+Date - 10/11/2013
+Author - B.Waidyawansa
+
+SHMSRunAction class
+
+
+
+*/
+//******************************************************************
+
+#ifndef SHMSRunAction_h
+#define SHMSRunAction_h 1
+
+#include <iostream>
+
+#include "globals.hh"
+#include "G4UserRunAction.hh"
+
+#include "g4root.hh"
+
+class G4Run;
+
+class SHMSRunAction : public G4UserRunAction
+{
+  public:
+
+    SHMSRunAction();
+   ~SHMSRunAction();
+
+    virtual void BeginOfRunAction(const G4Run*);
+    virtual void EndOfRunAction(const G4Run*);
+      
+};
+
+#endif
