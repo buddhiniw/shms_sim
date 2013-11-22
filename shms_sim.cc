@@ -116,31 +116,34 @@ int main(int argc, char** argv)
   //
   if (argc==2)   
     {
-#ifdef G4UI_USE
-      G4UIExecutive* ui = new G4UIExecutive(argc, argv);
-#ifdef G4VIS_USE
-      UImanager->ApplyCommand("/control/execute vis.mac");  
-   
-#endif
-      ui->SessionStart();
-      delete ui;
-#endif
+      // 11-18-13 buddhini commented out to run witout visualization
+// #ifdef G4UI_USE
+//       G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+// #ifdef G4VIS_USE
+//       UImanager->ApplyCommand("/control/execute vis.mac");       
+// #endif
+//       ui->SessionStart();
+//       delete ui;
+// #endif
+
+      UImanager->ApplyCommand("/run/verbose 1");
+      UImanager->ApplyCommand("/event/verbose 1");
+      UImanager->ApplyCommand("/tracking/verbose 0");
+      
+      // start a run
+      int numberOfEvent = 20000;
+      runManager->BeamOn(numberOfEvent);
+           
     }
-//   else          
-//     { 
-//       // Batch mode
-//       G4String command = "/control/execute ";
-//       G4String fileName = argv[1];
-//       UImanager->ApplyCommand(command+fileName);
-//     }
+  
   
   // job termination
 
 #ifdef G4VIS_USE
   delete visManager;
 #endif
-  delete runManager;
-  
+
+  delete runManager;  
   return 0;
 
 }

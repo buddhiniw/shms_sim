@@ -36,7 +36,7 @@ void SHMSRunAction::BeginOfRunAction(const G4Run* aRun)
 void SHMSRunAction::EndOfRunAction(const G4Run*)
 {
 
-  //save ntuples
+  //save ntuples and histograms
   Output->SaveROOTFile();
 
   G4cout << "### Run Action complete.." << G4endl;

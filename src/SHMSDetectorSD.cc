@@ -104,6 +104,9 @@ G4bool SHMSDetectorSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   G4String process;
   if (creatorProcess!=0) process = creatorProcess->GetProcessName();
 
+  // Kinetic energy of the electron at the vertex
+  G4double vertexE = fTrack->GetVertexKineticEnergy();
+
   // Kinetic energy of the original electron which interacted inside the target
   G4double kineE0 = fTrack->GetVertexKineticEnergy();
 
@@ -120,6 +123,7 @@ G4bool SHMSDetectorSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
   newHit->SetWorldPos(worldPosition);
   newHit->SetLocalPos(localPosition);
   newHit->SetScatAngle(scat_ang);
+  newHit->SetVertexEnergy(vertexE);
 
   newHit->SetKineticEnergy(kineE);
   newHit->SetKineticEnergy0(kineE0);

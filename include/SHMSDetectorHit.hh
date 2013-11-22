@@ -51,8 +51,13 @@ public:
   inline G4double GetKineticEnergy0()
   { return kineE0; }
 
+  inline void SetVertexEnergy(G4double e)
+  { vertexE = e; }
+  inline G4double GetVertexEnergy()
+  { return vertexE; }
+
   inline void SetEnergyDeposit(G4double e)
-  { eDep = e; }
+  { eDep += e; }
   inline G4double GetEnergyDeposit()
   { return eDep; }
 
@@ -79,6 +84,7 @@ private:
 
   G4double kineE;
   G4double kineE0;
+  G4double vertexE;
   G4double eDep;
   G4double particleFlag;
   G4String creatorProcess;

@@ -26,6 +26,7 @@ SHMSDetectorHit::SHMSDetectorHit()
   localPos = G4ThreeVector(0,0,0);
 
   kineE=0;
+  vertexE = 0;
   kineE0=0;
   eDep=0;
   particleFlag=0;

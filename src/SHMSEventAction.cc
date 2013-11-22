@@ -38,10 +38,10 @@ SHMSEventAction::SHMSEventAction()
 }
 
 SHMSEventAction::~SHMSEventAction()
-{}
+{
+}
 
 void SHMSEventAction::BeginOfEventAction( const G4Event* event)
-
 {
   G4int eventID = event->GetEventID();
   G4cout << "\n### Event Action - Begining of event " << eventID << G4endl;
@@ -78,7 +78,6 @@ void SHMSEventAction::EndOfEventAction(const G4Event* event)
 
   // get analysis manager
   analysisManager = SHMSAnalysisManager::Instance();
-  G4SDManager * SDman = G4SDManager::GetSDMpointer();
 
   // Get hits collection for this event
   G4HCofThisEvent * HCE = event->GetHCofThisEvent();
@@ -92,6 +91,8 @@ void SHMSEventAction::EndOfEventAction(const G4Event* event)
   }
 
   for (int i=0; i<nDets; i++) {
+    G4double total_energy =0.0;
+
     if(THC[i]){
       int n_hit = THC[i]->entries();
       if (n_hit>0) {
@@ -99,13 +100,26 @@ void SHMSEventAction::EndOfEventAction(const G4Event* event)
 	for(G4int k=0;k<n_hit;k++) {
 	  SHMSDetectorHit* aHit = (*THC[i])[k];
 	  // For now, we save all hits in the sensitive detectors without any selections
-	  analysisManager-> FillNtuple(aHit,sd_names.at(i));
+	  analysisManager-> FillNtuples(aHit,sd_names.at(i));
+	  analysisManager-> FillHistograms(aHit,sd_names.at(i));
+
+	  //Total energy deposited in the event
+	  total_energy+=(aHit->GetEnergyDeposit()/MeV);
 	}
       }
     }
+    TH1* histo1 = (TH1D*)gDirectory->Get(Form("Tot_Edep_%s",(sd_names.at(i)).data()));
+    if(!histo1){
+      G4cout<<" Unable to find the total energy deposit histogram for "<<sd_names.at(i)<<G4endl;
+      return;
+    }
+    else{
+      histo1 ->Fill(total_energy); 
+    }
+
   }
 
-  THC.clear();
+ 
 }
 
 
