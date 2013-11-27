@@ -1,5 +1,9 @@
-SHMS_simulation for fringe fields
+SHMS_simulation for fringe fields - test code
 =================================================
+This is a code used for testing the shms_sim code using $GEANT4/examples/extended/analysis/AnaEx01. 
+To run, first copy the example into the working directory. 
+Modify the Vaccum, Lead and Liquid Argon material definitions to match what is on the AnaEx01.gdml. The changes should be made in the DetectorConstruction.cc file under $GEANT4/examples/extended/analysis/share folder.
+
 
 Make sure to source buddhini.csh at the login and $G4BIN/geant4.csh to set the GEANT4 enviorenment
 
@@ -12,12 +16,9 @@ To run this simulation -
 - Then compile
 make -j  3
 
+and
 
-- Copy gdml files into the build directory.
-	- mag_field_test.gdml - no detectors. 
- 	- bender_test.gdml - no target. Only the bender
-	- test_target.gdml - only the target. No detectors.
-	- bender_geom.gdml - full setup
-	- bender_geom_no_dump.gdml - no beam dump.
+./shms_sim AnEx01.gdml
+
 
 
