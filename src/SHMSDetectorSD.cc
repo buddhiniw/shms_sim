@@ -41,7 +41,6 @@ void SHMSDetectorSD::Initialize(G4HCofThisEvent* HCE)
 G4bool SHMSDetectorSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 {
 
-
   // Identify and flag the particle
   //
 
@@ -115,7 +114,6 @@ G4bool SHMSDetectorSD::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 
   // Total energy deposited
   G4double eDep = aStep->GetTotalEnergyDeposit();
-
   // Create and define Hit attributes 
   //
   SHMSDetectorHit* newHit = new SHMSDetectorHit();

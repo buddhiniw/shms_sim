@@ -17,6 +17,9 @@ SHMSAnalysisManager class
 #include "TFile.h"
 #include "TNtuple.h"
 #include "TDirectory.h"
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TH3D.h>
 
 #include "g4root.hh"
 #include "globals.hh"
@@ -37,20 +40,15 @@ public:
   // static access method
   static SHMSAnalysisManager* Instance();
 
+  inline G4int GetNoSDDetectors() const { return nDet; };
+
   void Clear();
   void SetFileName   (const G4String& name) { fileName = name;};
   void OpenROOTFile();
   void SaveROOTFile();
-  // void CreateNtuples(G4String name);
-  //void FillNtuple(SHMSDetectorHit* aHit);
-  //  void FillNtupleDColumn(G4int icol, G4double dval);
-  //  void FillNtuple(G4ThreeVector world, G4ThreeVector local,
-  //		  G4double kineE0, G4double kineE1, G4double eDep,
-  //		  G4int particle_flag);  
-  void FillNtuple(G4String ntuple_name, 
-		  G4ThreeVector world, G4ThreeVector local,
-		  G4double kineE0, G4double kineE, G4double eDep,
-		  G4double particle_flag); 
+  void CreateNtuplesHistos();
+  void FillNtuples(SHMSDetectorHit *aHit,G4String ntuple_name);
+  void FillHistograms(SHMSDetectorHit *aHit,G4String hist_name);
 
 private:
   static SHMSAnalysisManager*  fgInstance;  
@@ -58,6 +56,10 @@ private:
 
   TFile *theTFile;
   std::vector<TNtuple*> Ntuples;
+  std::vector<TH3D*> histo3d;
+  std::vector<TH2D*> histo2d;
+  std::vector<TH1D*> histo1d;
+
   G4int nDet;
 
   G4double kinE0,kinE;

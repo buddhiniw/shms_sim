@@ -142,7 +142,7 @@ void SHMSPhysicsList::SetCuts()
 {
   if (verboseLevel >0){
     G4cout << "SHMSPhysicsList::SetCuts:";
-    G4cout << "CutLength : " << G4BestUnit(defaultCutValue,"Length") << G4endl;
+    G4cout << "\nCutLength : " << G4BestUnit(defaultCutValue,"Length") << G4endl;
   }  
   
   SetCutsWithDefault(); 

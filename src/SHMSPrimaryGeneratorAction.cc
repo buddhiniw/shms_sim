@@ -22,8 +22,9 @@ SHMSPrimaryGeneratorAction class implementation
 
 // booliean keys to turn on/off particle gun types
 #define TEST 0         // to test the magnetic field with no target
-#define WITH_TGT 1          
+#define WITH_TGT 0          
 #define DEBUG 0          
+#define TESTA1 1          
 
 
 
@@ -40,24 +41,35 @@ SHMSPrimaryGeneratorAction::SHMSPrimaryGeneratorAction()
   G4ParticleDefinition* particle = fParticleTable->FindParticle("e-");
   fParticleGun->SetParticleDefinition(particle);
   
-  // Particle energy distribution 11 GeV.
-  fParticleGun->SetParticleEnergy(11000*MeV);
+//   // Particle energy distribution 11 GeV.
+//   fParticleGun->SetParticleEnergy(11000*MeV);
 
 
-  /*
-    11-05-2013 Buddhini - Hardcode location of the particle gun w.r.t bender body coordinate system. 
-    The gun is 30 cm upstream from the center of the 20 cm long target.
-    From geometry (in cm);
+//   /*
+//     11-05-2013 Buddhini - Hardcode location of the particle gun w.r.t bender body coordinate system. 
+//     The gun is 30 cm upstream from the center of the 20 cm long target.
+//     From geometry (in cm);
     
-    X = target_X+30*sin(8.5)
-    Y = 0
-    Z = target_Z+30*cos(8.5)  
-  From GDML file, bender_geom.gdml, target_X = 176 sin 3 , target_Z = -176 cos 3
+//     X = target_X+30*sin(8.5)
+//     Y = 0
+//     Z = target_Z+30*cos(8.5)  
+//   From GDML file, bender_geom.gdml, target_X = 176 sin 3 , target_Z = -176 cos 3
 
-  */
-  gun_x_pos = 13.65*cm;
-  gun_y_pos = 0;
-  gun_z_pos = 205.43*cm;
+//   */
+//   gun_x_pos = 13.65*cm;
+//   gun_y_pos = 0;
+//   gun_z_pos = 205.43*cm;
+
+  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
+  fParticleGun->SetParticleEnergy(500.*MeV);
+  G4double position = -0.5*180*mm;
+  fParticleGun->SetParticlePosition(G4ThreeVector(position,0.*cm,0.*cm));
+
+//   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
+//   fParticleGun->SetParticleEnergy(50.*MeV);
+//   G4double position = -0.5*180*mm;
+//   fParticleGun->SetParticlePosition(G4ThreeVector(position,0.*cm,0.*cm));
+
 
 }
 
@@ -73,6 +85,15 @@ void SHMSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
  
   // To test the magnetic field
   G4cout<<"\n### Generate Primaries .. "<<G4endl;
+
+  if(TESTA1){
+    // for testing with AnaEx01)
+    G4double position = -0.5*180*mm;
+    fParticleGun->SetParticlePosition(G4ThreeVector(position,0.*cm,0.*cm));
+    fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    G4cout<<"Testing AnaEx01 .. \n";
+  }
 
   if(TEST){
 

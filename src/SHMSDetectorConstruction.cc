@@ -202,15 +202,59 @@ G4VPhysicalVolume* SHMSDetectorConstruction::Construct()
   fWorldPhysVol->GetLogicalVolume()->SetVisAttributes(WorldVisAtt);
   for(int i=0;i<fWorldPhysVol->GetLogicalVolume()->GetNoDaughters();i++)
     {
- 
-      if (fWorldPhysVol->GetLogicalVolume()->GetDaughter(i)
-	  ->GetLogicalVolume()->GetMaterial()->GetName().compare("Vacuum")==0)
- 	{
-	  fWorldPhysVol->GetLogicalVolume()->GetDaughter(i)
-	    ->GetLogicalVolume()->SetVisAttributes(vaccumVisAtt); 
- 	  fWorldPhysVol->GetLogicalVolume()->GetDaughter(i)
-	    ->GetLogicalVolume()->SetMaterial(fVacuum);
- 	}
+
+      G4LogicalVolume* daug = (fWorldPhysVol->GetLogicalVolume()->GetDaughter(i))->GetLogicalVolume();
+      
+//       if ((daug->GetName())=="calorLog")
+//  	{
+// 	  G4cout<<"##################  Vaccum\n";
+// 	  daug->SetVisAttributes(vaccumVisAtt); 
+//  	  daug->SetMaterial(fVacuum);
+//  	}
+//       ///////////
+      
+//       G4cout<<"########################## "<<daug->GetNoDaughters()<<G4endl;
+//       G4LogicalVolume * daug1 = (daug->GetDaughter(0)->GetLogicalVolume());
+
+//       for(int j=0;j<daug1->GetNoDaughters();j++)
+// 	{
+// 	  G4LogicalVolume * daug2 = (daug1->GetDaughter(j)->GetLogicalVolume());
+
+// 	  G4cout<<"########################## layer "<<daug2->TotalVolumeEntities()<<G4endl;
+// 	  for(int k=0;k<daug2->TotalVolumeEntities();k++)
+// 	    {
+// 	      G4LogicalVolume * daug3 = (daug2->TotalVolumeEntities()->GetLogicalVolume());
+	      
+// 	      if (daug3->GetName().compare("absLog")==0)
+// 		{
+		  
+// 		  daug3->SetMaterial(fLead);
+// 		  G4cout<<"###########################################################  Lead\n";
+		  
+// 		}
+// 	      if (daug3->GetName().compare("gapLog")==0)
+// 		{
+		  
+// 		  daug3->SetMaterial(fArgon);
+// 		  G4cout<<"#############  LAr\n";
+		  
+// 		}
+
+// 	    }
+// 	}
+	  
+// 	  if (fWorldPhysVol->GetLogicalVolume()->GetDaughter(i)
+// 	      ->GetLogicalVolume()->GetMaterial()->GetName().compare("LAr")==0)
+// 	    {
+	      
+// 	      fWorldPhysVol->GetLogicalVolume()->GetDaughter(i)
+// 		->GetLogicalVolume()->SetMaterial(fArgon);
+// 	      G4cout<<"#############  LAr\n";
+	      
+// 	    }
+	
+      
+     /////////////
 
       if (fWorldPhysVol->GetLogicalVolume()->GetDaughter(i)
 	  ->GetLogicalVolume()->GetMaterial()->GetName().compare("Copper")==0)
@@ -312,46 +356,55 @@ G4VPhysicalVolume* SHMSDetectorConstruction::Construct()
 void SHMSDetectorConstruction::DefineMaterials()
 {
    
-  // Use NIST database for elements and materials whereever possible.
-  G4NistManager* man = G4NistManager::Instance();
-  man->SetVerbose(1);
+//   // Use NIST database for elements and materials whereever possible.
+//   G4NistManager* man = G4NistManager::Instance();
+//   man->SetVerbose(1);
    
-  // Define elements from NIST 
-  //  G4Element* H = man->FindOrBuildElement("H");
-  G4Element* C  = man->FindOrBuildElement("C");
-  G4Element* Si = man->FindOrBuildElement("Si");
-  G4Element* Cr = man->FindOrBuildElement("Cr");
-  G4Element* Mn = man->FindOrBuildElement("Mn");
-  G4Element* Fe = man->FindOrBuildElement("Fe");
-  G4Element* Ni = man->FindOrBuildElement("Ni");
-  G4Material* Al = man->FindOrBuildMaterial("G4_Al");
-  G4Element* Cu = man->FindOrBuildElement("Cu");
+//   // Define elements from NIST 
+//   //  G4Element* H = man->FindOrBuildElement("H");
+//   G4Element* C  = man->FindOrBuildElement("C");
+//   G4Element* Si = man->FindOrBuildElement("Si");
+//   G4Element* Cr = man->FindOrBuildElement("Cr");
+//   G4Element* Mn = man->FindOrBuildElement("Mn");
+//   G4Element* Fe = man->FindOrBuildElement("Fe");
+//   G4Element* Ni = man->FindOrBuildElement("Ni");
+//   G4Material* Al = man->FindOrBuildMaterial("G4_Al");
+//   G4Element* Cu = man->FindOrBuildElement("Cu");
   
-  // Define materials not in NIST
-  G4double density,temperature,pressure;
-  G4int ncomponents;
-  G4double fractionmass;
+//   // Define materials not in NIST
+//   G4double density,temperature,pressure;
+//   G4int ncomponents;
+//   G4double fractionmass;
   
-  // Stainless steel
-  fSSteel = new G4Material("StainlessSteel",density= 8.06*g/cm3, ncomponents=6);
-  fSSteel->AddElement(C, fractionmass=0.001);
-  fSSteel->AddElement(Si, fractionmass=0.007);
-  fSSteel->AddElement(Cr, fractionmass=0.18);
-  fSSteel->AddElement(Mn, fractionmass=0.01);
-  fSSteel->AddElement(Fe, fractionmass=0.712);
-  fSSteel->AddElement(Ni, fractionmass=0.09); 
+//   // Stainless steel
+//   fSSteel = new G4Material("StainlessSteel",density= 8.06*g/cm3, ncomponents=6);
+//   fSSteel->AddElement(C, fractionmass=0.001);
+//   fSSteel->AddElement(Si, fractionmass=0.007);
+//   fSSteel->AddElement(Cr, fractionmass=0.18);
+//   fSSteel->AddElement(Mn, fractionmass=0.01);
+//   fSSteel->AddElement(Fe, fractionmass=0.712);
+//   fSSteel->AddElement(Ni, fractionmass=0.09); 
 
-  // Vacuum
-  pressure    = 2.e-2*bar;
-  temperature = STP_Temperature;         //from PhysicalConstants.h
-  fVacuum = new G4Material("vacuum"
-			   ,density=1.e-5*g/cm3, ncomponents=1
-			   ,kStateGas,temperature,pressure);
-  G4Material* Air = man->FindOrBuildMaterial("G4_AIR");
-  fVacuum->AddMaterial(Air, fractionmass=1.00);
+//   // Vacuum
+//   pressure    = 2.e-2*bar;
+//   temperature = STP_Temperature;         //from PhysicalConstants.h
 
-  G4cout << G4endl << *(G4Material::GetMaterialTable()) << G4endl;
 
-  G4cout << "end material"<< G4endl;  
+// //   fVacuum = man->FindOrBuildMaterial("G4_Galactic");
+// //   fArgon = man->FindOrBuildMaterial("G4_lAr");
+// //   fLead = man->FindOrBuildMaterial("G4_Pb");
+
+//     // new G4Material("vacuum"
+// // 			   ,density=1.e-5*g/cm3, ncomponents=1
+// // 			   ,kStateGas,temperature,pressure);
+
+  
+
+//   G4Material* Air = man->FindOrBuildMaterial("G4_AIR");
+//   //fVacuum->AddMaterial(Air, fractionmass=1.00);
+
+//   //  G4cout << G4endl << *(G4Material::GetMaterialTable()) << G4endl;
+
+//   G4cout << "end material"<< G4endl;  
 
 }

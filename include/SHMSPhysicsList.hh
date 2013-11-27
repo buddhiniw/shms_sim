@@ -71,7 +71,8 @@ protected:
   // these methods Construct physics processes and register them
   void ConstructGeneral();
   void ConstructEM();
-  
+  void ConstructDecay();
+
 private:
   
 };

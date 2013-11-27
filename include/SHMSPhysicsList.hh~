@@ -1,20 +1,15 @@
-//    ********************************
-//    *                              *
-//    *    SHMSPhysicsList.hh     *
-//    *                              *
-//    ********************************
-//
-//
+//******************************************************************
 /*
-Date 10-08-2013
-Author B.Waidyawansa
+Date - 10/14/2013
+Author - B.Waidyawansa
 
-Attempt to import bender magnetic field map into geant4.
-Use examples/advanced/purging_magnet.
+SHMSPhysicsList class to generate the physics events relevent to
+this simulation
+
+
 
 */
-//
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+//******************************************************************
 
 #ifndef SHMSPhysicsList_h
 #define SHMSPhysicsList_h 1
@@ -22,7 +17,6 @@ Use examples/advanced/purging_magnet.
 #include "G4VUserPhysicsList.hh"
 #include "globals.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 class G4GammaConversion;     
 class G4ComptonScattering;   

@@ -96,7 +96,7 @@ void SHMSAnalysisManager::CreateNtuplesHistos()
 				     "local_x_cm:local_y_cm:local_z_cm:vertexE_MeV:eDep_MeV:scat_angle_deg:flagParticle");	
 
       // Create histogram(s)
-      histo1d.at(i) = new TH1D(Form("Tot_Edep_%s",(detNames.at(i)).data()), "Total Energy Deposition in the Volume; Total Energy Deposition (MeV); Electrons in the Beam ", 0, 0.0, 0.0);
+      histo1d.at(i) = new TH1D(Form("Tot_Edep_%s",(detNames.at(i)).data()), "Total Energy Deposition in the Volume; Total Energy Deposition (MeV); Electrons in the Beam ", 800, 0.0, 800.0*MeV);
       histo2d.at(i) = new TH2D(Form("XYpos_%s",(detNames.at(i)).data()), "Hits on the XY plane; X (cm); Y (cm)", 0, 0.0, 0.0, 0, 0.0, 0.0);         
       histo3d.at(i) = new TH3D(Form("Edep_%s",(detNames.at(i)).data()), "Energy Deposition Spectrum in Volume; X (cm); Y(cm); Z(cm)", 0, 0.0, 0.0, 0, 0.0, 0.0, 0, 0.0, 0.0);
     }

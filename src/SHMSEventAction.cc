@@ -75,7 +75,6 @@ void SHMSEventAction::BeginOfEventAction( const G4Event* event)
 
 void SHMSEventAction::EndOfEventAction(const G4Event* event)
 {                          
-
   // get analysis manager
   analysisManager = SHMSAnalysisManager::Instance();
 
@@ -89,6 +88,8 @@ void SHMSEventAction::EndOfEventAction(const G4Event* event)
       THC.push_back ((SHMSDetectorHitsCollection*)(HCE->GetHC(hitsCollectionID[i])));
     }
   }
+  else
+    G4cout<<"Hit collection for this event was not found!!!!\n";
 
   for (int i=0; i<nDets; i++) {
     G4double total_energy =0.0;
@@ -108,13 +109,16 @@ void SHMSEventAction::EndOfEventAction(const G4Event* event)
 	}
       }
     }
+    //    G4cout<<" Total energy deposited for this event ="<<total_energy<<G4endl;
+    std::cout<<"$$$$$$ eDep for event ="<<total_energy<<G4endl;
+
     TH1* histo1 = (TH1D*)gDirectory->Get(Form("Tot_Edep_%s",(sd_names.at(i)).data()));
     if(!histo1){
       G4cout<<" Unable to find the total energy deposit histogram for "<<sd_names.at(i)<<G4endl;
       return;
     }
     else{
-      histo1 ->Fill(total_energy); 
+      histo1 ->Fill(total_energy,1); 
     }
 
   }

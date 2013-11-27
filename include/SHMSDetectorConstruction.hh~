@@ -15,10 +15,7 @@ SHMS detector construction class loading the geometry from GDML files.
 
 #include "G4VUserDetectorConstruction.hh"
 #include "G4GDMLParser.hh"
-//#include "G4LogicalVolume.hh"
-//#include "G4Material.hh"
 #include "globals.hh"
-//#include "G4VSensitiveDetector.hh"
 
 
 #include "SHMSMagTabulatedField3D.hh"
@@ -42,14 +39,12 @@ public:
 
 
   G4VPhysicalVolume* Construct();
-  inline G4int GetNoSDDetectors() const { return nSDDet; }
-  inline G4String GetGeomFile() const { return fGeomFile; }
-  const std::vector<G4String> GetDetNames() const { return detNames; }
+  inline G4String GetGeomFile() const { return fGeomFile; };
+  const std::vector<G4String> GetDetNames() const { return detNames; };
 
   // Magnetic field
   G4MagneticField* SHMSMagField;
 
-  G4int nSDDet;
 
 private:
   static SHMSDetectorConstruction*  fgInstance;  
@@ -81,7 +76,6 @@ private:
   // Array for ensitive detectors
   //
   std::vector<G4String> detNames;
-
 
 
 };

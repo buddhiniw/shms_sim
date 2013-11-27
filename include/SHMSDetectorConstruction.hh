@@ -58,6 +58,9 @@ private:
   G4Material* fVacuum;
   G4Material* fSSteel;
   
+  G4Material* fLead;
+  G4Material* fArgon;
+
   // GDML Reading and Writing Settings
   //
   G4String fGeomFile;
@@ -69,7 +72,7 @@ private:
   // Physical volumes
   //
   G4VPhysicalVolume* fWorldPhysVol;
-
+  
   // Sensitive Detector Manager
   //
   G4SDManager*  SDman;    

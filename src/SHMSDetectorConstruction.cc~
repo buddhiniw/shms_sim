@@ -344,11 +344,15 @@ void SHMSDetectorConstruction::DefineMaterials()
   // Vacuum
   pressure    = 2.e-2*bar;
   temperature = STP_Temperature;         //from PhysicalConstants.h
-  fVacuum = new G4Material("vacuum"
-			   ,density=1.e-5*g/cm3, ncomponents=1
-			   ,kStateGas,temperature,pressure);
+  fVacuum = man->FindOrBuildMaterial("G4_Galactic");
+    // new G4Material("vacuum"
+// 			   ,density=1.e-5*g/cm3, ncomponents=1
+// 			   ,kStateGas,temperature,pressure);
+
+  
+
   G4Material* Air = man->FindOrBuildMaterial("G4_AIR");
-  fVacuum->AddMaterial(Air, fractionmass=1.00);
+  //fVacuum->AddMaterial(Air, fractionmass=1.00);
 
   G4cout << G4endl << *(G4Material::GetMaterialTable()) << G4endl;
 

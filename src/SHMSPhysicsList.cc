@@ -17,6 +17,7 @@ SHMSPhysicsList class implementation
 #include "G4SystemOfUnits.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleWithCuts.hh"
+
 #include "G4ProcessManager.hh"
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
@@ -24,11 +25,21 @@ SHMSPhysicsList class implementation
 #include "G4UnitsTable.hh"
 #include "G4ios.hh"              
 
+#include "G4BosonConstructor.hh"
+#include "G4LeptonConstructor.hh"
+#include "G4MesonConstructor.hh"
+#include "G4BosonConstructor.hh"
+#include "G4BaryonConstructor.hh"
+#include "G4IonConstructor.hh"
 
 SHMSPhysicsList::SHMSPhysicsList():  G4VUserPhysicsList()
 {
   SetCuts();
-  defaultCutValue = 1*micrometer;
+
+  //If the primary doesnt have enough energy to produce secondaries that travel at least 1mm
+  // then stop track.
+
+  defaultCutValue = 1*mm;
 //   cutForGamma     = defaultCutValue;
 //   cutForElectron  = defaultCutValue;
 //   cutForPositron  = defaultCutValue;
@@ -48,10 +59,24 @@ void SHMSPhysicsList::ConstructParticle()
   // for all particles which you want to use.
   // This ensures that objects of these particle types will be
   // created in the program. 
+  G4BosonConstructor  pBosonConstructor;
+  pBosonConstructor.ConstructParticle();
+  
+  G4LeptonConstructor pLeptonConstructor;
+  pLeptonConstructor.ConstructParticle();
+  
+  G4MesonConstructor pMesonConstructor;
+  pMesonConstructor.ConstructParticle();
 
-  ConstructBosons();
-  ConstructLeptons();
-  ConstructBarions();
+  G4BaryonConstructor pBaryonConstructor;
+  pBaryonConstructor.ConstructParticle();
+
+  G4IonConstructor pIonConstructor;
+  pIonConstructor.ConstructParticle(); 
+  
+//   ConstructBosons();
+//   ConstructLeptons();
+//   ConstructBarions();
 }
 
 
@@ -85,8 +110,12 @@ void SHMSPhysicsList::ConstructProcess()
 {
   AddTransportation();
   ConstructEM();
-  ConstructGeneral();
+  //  ConstructGeneral();
+  ConstructDecay();
+
 }
+
+#include "G4PhysicsListHelper.hh"
 
 
 #include "G4eMultipleScattering.hh"            
@@ -99,40 +128,126 @@ void SHMSPhysicsList::ConstructProcess()
 #include "G4eIonisation.hh"                   
 #include "G4eBremsstrahlung.hh"                
 #include "G4eplusAnnihilation.hh"             
+#include "G4eMultipleScattering.hh"
 
+#include "G4MuMultipleScattering.hh"
+#include "G4MuIonisation.hh"
+#include "G4MuBremsstrahlung.hh"
+#include "G4MuPairProduction.hh"
+
+#include "G4hMultipleScattering.hh"
+#include "G4hIonisation.hh"
+#include "G4hBremsstrahlung.hh"
+#include "G4hPairProduction.hh"
+
+#include "G4ionIonisation.hh"
 
 void SHMSPhysicsList::ConstructEM()
 {
+  G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+
   theParticleIterator->reset();
   while( (*theParticleIterator)() )
     {
       G4ParticleDefinition* particle = theParticleIterator->value();
-      G4ProcessManager* pmanager = particle->GetProcessManager();
+      //G4ProcessManager* pmanager = particle->GetProcessManager();
       G4String particleName = particle->GetParticleName();
       
       
+//       if (particleName == "gamma") {
+// 	//gamma
+// 	pmanager->AddDiscreteProcess(new G4GammaConversion);
+// 	pmanager->AddDiscreteProcess(new G4ComptonScattering);
+// 	pmanager->AddDiscreteProcess(new G4PhotoElectricEffect);
+	
+//       } else if (particleName == "e-") {
+// 	//electron
+// 	pmanager->AddProcess(new G4eBremsstrahlung,    -1,-1,3);      
+// 	pmanager->AddProcess(new G4eIonisation,        -1, 2,2);
+// 	pmanager->AddProcess(new G4eMultipleScattering, -1, 1,1);      
+	
+//       } else if (particleName == "e+") {
+// 	//positron      
+// 	pmanager->AddProcess(new G4eBremsstrahlung,    -1,-1,3);      
+// 	pmanager->AddProcess(new G4eIonisation,        -1, 2,2);
+// 	pmanager->AddProcess(new G4eMultipleScattering, -1, 1,1);      
+// 	pmanager->AddProcess(new G4eplusAnnihilation,   0,-1,4); 
+      
       if (particleName == "gamma") {
-	//gamma
-	pmanager->AddDiscreteProcess(new G4GammaConversion);
-	pmanager->AddDiscreteProcess(new G4ComptonScattering);
-	pmanager->AddDiscreteProcess(new G4PhotoElectricEffect);
+	// gamma         
+	ph->RegisterProcess(new G4PhotoElectricEffect, particle);
+	ph->RegisterProcess(new G4ComptonScattering,   particle);
+	ph->RegisterProcess(new G4GammaConversion,     particle);
 	
       } else if (particleName == "e-") {
 	//electron
-	pmanager->AddProcess(new G4eBremsstrahlung,    -1,-1,3);      
-	pmanager->AddProcess(new G4eIonisation,        -1, 2,2);
-	pmanager->AddProcess(new G4eMultipleScattering, -1, 1,1);      
+	ph->RegisterProcess(new G4eMultipleScattering, particle);
+	ph->RegisterProcess(new G4eIonisation,         particle);
+	ph->RegisterProcess(new G4eBremsstrahlung,     particle);      
 	
       } else if (particleName == "e+") {
-	//positron      
-	pmanager->AddProcess(new G4eBremsstrahlung,    -1,-1,3);      
-	pmanager->AddProcess(new G4eIonisation,        -1, 2,2);
-	pmanager->AddProcess(new G4eMultipleScattering, -1, 1,1);      
-	pmanager->AddProcess(new G4eplusAnnihilation,   0,-1,4);      
-      }
-    }
+	//positron
+	ph->RegisterProcess(new G4eMultipleScattering, particle);
+	ph->RegisterProcess(new G4eIonisation,         particle);
+	ph->RegisterProcess(new G4eBremsstrahlung,     particle);
+	ph->RegisterProcess(new G4eplusAnnihilation,   particle);
+	
+		
+      } else if( particleName == "mu+" || 
+		 particleName == "mu-"    ) {
+	//muon  
+	ph->RegisterProcess(new G4MuMultipleScattering, particle);
+	ph->RegisterProcess(new G4MuIonisation,         particle);
+	ph->RegisterProcess(new G4MuBremsstrahlung,     particle);
+	ph->RegisterProcess(new G4MuPairProduction,     particle);
+	
+      } else if( particleName == "proton" || 
+		 particleName == "pi-" ||
+		 particleName == "pi+"    ) {
+	//proton  
+	ph->RegisterProcess(new G4hMultipleScattering, particle);
+	ph->RegisterProcess(new G4hIonisation,         particle);
+	ph->RegisterProcess(new G4hBremsstrahlung,     particle);
+	ph->RegisterProcess(new G4hPairProduction,     particle);       
+	
+	///////////////////////////////////////////////////////////////
+      } else if( particleName == "alpha" || 
+		 particleName == "He3" )     {
+	//alpha 
+	ph->RegisterProcess(new G4hMultipleScattering, particle);
+	ph->RegisterProcess(new G4ionIonisation,       particle);
+	
+      } else if( particleName == "GenericIon" ) { 
+	//Ions 
+	ph->RegisterProcess(new G4hMultipleScattering, particle);
+	ph->RegisterProcess(new G4ionIonisation,       particle);     
+	
+      } else if ((!particle->IsShortLived()) &&
+		 (particle->GetPDGCharge() != 0.0) && 
+		 (particle->GetParticleName() != "chargedgeantino")) {
+	//all others charged particles except geantino
+	ph->RegisterProcess(new G4hMultipleScattering, particle);
+	ph->RegisterProcess(new G4hIonisation,         particle);        
+      }     
+    }	
 }
 
+#include "G4Decay.hh"
+
+void SHMSPhysicsList::ConstructDecay()
+{
+  G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+  
+  // Add Decay Process
+  G4Decay* theDecayProcess = new G4Decay();
+  theParticleIterator->reset();
+  while( (*theParticleIterator)() ){
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    if (theDecayProcess->IsApplicable(*particle)) { 
+      ph->RegisterProcess(theDecayProcess, particle);
+    }
+  }
+}
 
 void SHMSPhysicsList::ConstructGeneral()
 { }
@@ -147,12 +262,12 @@ void SHMSPhysicsList::SetCuts()
   
   SetCutsWithDefault(); 
   
-//   // set cut values for gamma at first and for e- second and next for e+,
-//   // because some processes for e+/e- need cut values for gamma 
-//   SetCutValue(cutForGamma, "gamma");
-//   SetCutValue(cutForElectron, "e-");
-//   SetCutValue(cutForPositron, "e+");
-  
+  // set cut values for gamma at first and for e- second and next for e+,
+  // because some processes for e+/e- need cut values for gamma 
+  SetCutValue(cutForGamma, "gamma");
+  SetCutValue(cutForElectron, "e-");
+  SetCutValue(cutForPositron, "e+");
+  SetCutValue(defaultCutValue, "proton");
   
   if (verboseLevel>0) DumpCutValuesTable();
 }
